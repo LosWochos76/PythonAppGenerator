@@ -1,0 +1,58 @@
+using Microsoft.AspNetCore.Mvc;
+using <<%model.name%>>.Model;
+using <<%model.name%>>.Business;
+
+namespace <<%model.name%>>.Restful;
+
+[ApiController]
+[Route("[controller]")]
+public class <<%entity.name%>>Controller : ControllerBase
+{
+    private readonly ILogger<<<%entity.name%>>Controller> logger;
+    private readonly <<%entity.name%>>Service service;
+
+    public <<%entity.name%>>Controller(ILogger<<<%entity.name%>>Controller> logger, <<%entity.name%>>Service service)
+    {
+        this.logger = logger;
+        this.service = service;
+    }
+
+    [Route("/<<%entity.name%>>/")]
+    [HttpPost]
+    public IActionResult Insert([FromBody] <<%entity.name%>> obj)
+    {
+        return Ok(service.Insert(obj));
+    }
+
+    [Route("/<<%entity.name%>>/{id}")]
+    [HttpPut]
+    public IActionResult Update([FromBody] <<%entity.name%>> obj)
+    {
+        return Ok(service.Update(obj));
+    }
+
+    [Route("/<<%entity.name%>>/{id}")]
+    [HttpGet]
+    public IActionResult GetById(int id)
+    {
+        return Ok(service.GetById(id));
+    }
+
+    [Route("/<<%entity.name%>>/{id}")]
+    [HttpDelete]
+    public IActionResult Delete(int id)
+    {
+        service.Delete(id);
+        return Ok();
+    }
+
+    [Route("/<<%entity.name%>>/")]
+    [HttpGet]
+    public IEnumerable<<<%entity.name%>>> GetAll([FromQuery] <<%entity.name%>>Filter filter)
+    {
+        if (filter == null)
+            filter = new <<%entity.name%>>Filter();
+
+        return service.GetAll(filter);
+    }
+}

@@ -1,0 +1,19 @@
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+<% for entity in model.entities %>
+import { <<% entity.name %>>ListComponent } from './<<% entity.name|lower %>>/<<% entity.name|lower %>>-list/<<% entity.name|lower %>>-list.component';
+import { <<% entity.name %>>EditComponent } from './<<% entity.name|lower %>>/<<% entity.name|lower %>>-edit/<<% entity.name|lower %>>-edit.component';
+<% endfor %>
+
+const routes: Routes = [
+<% for entity in model.entities %>
+    { path: '<<% entity.name|lower %>>', component: <<% entity.name %>>ListComponent },
+    { path: '<<% entity.name|lower %>>/:id', component: <<% entity.name %>>EditComponent },
+<% endfor %>
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { }

@@ -1,0 +1,91 @@
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { EventEmitter, Injectable, Output } from '@angular/core';
+import { environment } from 'src/environments/environment';
+import { LoggingService } from './logging.service';
+import { <<% entity.name %>> } from '../model/<<% entity.name|lower %>>';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class <<% entity.name %>>Service {
+  @Output() changed = new EventEmitter();
+  private url = environment.api_url;
+
+  constructor(
+    private logger: LoggingService,
+    private http: HttpClient) { }
+
+  async getAll(page: number = -1): Promise<<<% entity.name %>>[]> {
+    this.logger.debug("Loading all <<% entity.name|lower %>>s");
+
+    var query:any = {};
+    if (page != -1) {
+      query['from'] = (page - 1) * 10;
+      query['count'] = 10;
+    }
+
+    let result = await this.http.get<<<% entity.name %>>[]>(this.url + "<<% entity.name %>>",
+    {
+      params: query,
+      headers: new HttpHeaders({ Authorization: "" })
+    }).toPromise();
+
+    let objects:<<% entity.name %>>[] = [];
+    for (let obj of result) {
+      objects.push(<<% entity.name %>>.fromApi(obj));
+    }
+    return objects;
+  }
+
+  async byId(id: number): Promise<<<% entity.name %>>> {
+    let path = this.url + "<<% entity.name %>>/" + id;
+    this.logger.debug("Loading <<% entity.name %>> from " + path);
+
+    let result = await this.http.get<<<% entity.name %>>>(path,
+    {
+      headers: new HttpHeaders({ Authorization: "" })
+    }).toPromise();
+
+    if (result == null) {
+      this.logger.debug("Object not found!");
+      return null;
+    }
+    else
+      return <<% entity.name %>>.fromApi(result);
+  }
+
+  async remove(id: number) {
+    let path = this.url + "Challenge/" + id;
+    this.logger.debug("Removing Challenge from " + path);
+  
+    let result = await this.http.delete(path,
+    {
+      headers: new HttpHeaders({ Authorization: "" })
+    }).toPromise();
+
+    this.changed.emit();
+  }
+
+  async save(obj: <<% entity.name %>>) {
+    let data = obj.toApi();
+    let result = null;
+
+    if (obj.id == 0) {
+      this.logger.debug("Saving new <<% entity.name %>>");
+      result = await this.http.post(this.url + "<<% entity.name %>>", data,
+      {
+        headers: new HttpHeaders({ Authorization: "" })
+      }).toPromise();
+
+      obj.id = result["id"];
+    } else {
+      this.logger.debug("Saving existing <<% entity.name %>>");
+      result = await this.http.put(this.url + "<<% entity.name %>>/" + obj.id, data,
+      {
+        headers: new HttpHeaders({ Authorization: "" })
+      }).toPromise();
+    }
+
+    this.changed.emit();
+  }
+}

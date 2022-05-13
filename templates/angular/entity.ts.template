@@ -1,0 +1,50 @@
+<% for target in entity.distinct_targets %>
+import { <<% target.name %>> } from './<<% target.name|lower %>>';
+<% endfor %>
+
+export class <<% entity.name %>> {
+    id: number = 0;
+    <% for attribute in entity.attributes %>
+    <<% attribute.name|lower %>>: <<% attribute.typescript_type %>> = <<% attribute.typescript_default_value %>>;
+    <% endfor %>
+    <% for relation in entity.relations %>
+    <% if relation.cardinality == 1 %>
+    <<% relation.name|lower %>>?: <<% relation.target.name %>> = undefined;
+    <% else %>
+    <<% relation.name|lower %>>: <<% relation.target.name %>>[] = [];
+    <% endif %>
+    <% endfor %>
+
+    static fromApi(obj:any): <<% entity.name %>> {
+        let result = new <<% entity.name %>>();
+        <% for attribute in entity.attributes %>
+        result.<<% attribute.name|lower %>> = obj['<<% attribute.name %>>'];
+        <% endfor %>
+        <% for relation in entity.relations %>
+        <% if relation.cardinality == 1 %>
+        result.<<% relation.name|lower %>> = <<% relation.target.name %>>.fromApi(obj['<<% relation.name|lower %>>']);
+        <% else %>
+        for (var o of obj['<<% relation.name|lower %>>']) {
+            result.<<% relation.name|lower %>>.push(<<% relation.target.name %>>.fromApi(obj['<<% relation.name|lower %>>']));
+        }
+        <% endif %>
+        <% endfor %>
+        return result;
+    }
+
+    toApi() {
+        return {
+            "id": this.id,
+            <% for attribute in entity.attributes %>
+            "<<% attribute.name|lower %>>": this.<<% attribute.name|lower %>>,
+            <% endfor %>
+            <% for relation in entity.relations %>
+            <% if relation.cardinality == 1 %>
+            "<<% relation.name|lower %>>": this.<<% relation.name|lower %>>?.toApi(),
+            <% else %>
+            "<<% relation.name|lower %>>": [this.<<% relation.name|lower %>>.map(obj => obj.toApi())],
+            <% endif %>
+            <% endfor %>
+        };
+    }
+}

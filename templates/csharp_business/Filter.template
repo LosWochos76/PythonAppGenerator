@@ -1,0 +1,7 @@
+using <<%model.name%>>.Model;
+
+namespace <<%model.name%>>.Business;
+
+public class <<%entity.name%>>Filter : BaseFilter
+{
+}

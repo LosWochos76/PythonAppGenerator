@@ -1,0 +1,16 @@
+using Microsoft.EntityFrameworkCore;
+using <<%model.name%>>.Model;
+
+namespace <<%model.name%>>.Persistence
+{
+    public class <<%model.name%>>DbContext : DbContext
+    {
+        <% for entity in model.entities %>
+        public DbSet<<<% entity.name %>>> <<% entity.name %>>s { get; set; }
+        <% endfor %>
+
+        public <<%model.name%>>DbContext(DbContextOptions<<<%model.name%>>DbContext> options) : base(options)
+        {
+        }
+    }
+}

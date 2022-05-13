@@ -1,0 +1,37 @@
+meta:
+  name: "SeminarManager"
+  ui_name: "Seminar Manager"
+
+entities:
+  - Person:
+      attributes:
+        - firstname:
+            ui_name: "Vorname"
+            type: string
+            include_in_table: true
+        - lastname:
+            ui_name: "Nachname"
+            type: string
+            include_in_table: true
+        - email:
+            ui_name: "EMail"
+            type: string
+            include_in_table: true
+      orderby: lastname
+  - Seminar:
+      attributes:
+        - name:
+            ui_name: "Name"
+            type: string
+            include_in_table: true
+      orderby: name
+      relations:
+        - teacher:
+            ui_name: "Dozent"
+            target: Person
+            cardinality: 1
+        - attendees:
+            ui_name: "Teilnehmer"
+            target: Person
+            cardinality: n
+

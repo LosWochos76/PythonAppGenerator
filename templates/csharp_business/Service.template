@@ -1,0 +1,68 @@
+using <<%model.name%>>.Model;
+using <<%model.name%>>.Persistence;
+using System.Collections;
+using Microsoft.EntityFrameworkCore;
+
+namespace <<%model.name%>>.Business;
+
+public class <<%entity.name%>>Service
+{
+    private <<%model.name%>>DbContext db_context;
+
+    public <<%entity.name%>>Service(<<%model.name%>>DbContext db_context)
+    {
+        this.db_context = db_context;
+    }
+
+    public <<%entity.name%>> Insert(<<%entity.name%>> obj)
+    {
+        db_context.Add(obj);
+        db_context.SaveChanges();
+        return obj;
+    }
+    
+    public <<%entity.name%>> Update(<<%entity.name%>> obj)
+    {
+        db_context.Update(obj);
+        db_context.SaveChanges();
+        return obj;
+    }
+
+    public <<%entity.name%>> GetById(int id)
+    {
+        return db_context.<<%entity.name%>>s.
+        <% for relation in entity.relations %>
+            Include(e => e.<<% relation.csharp_name %>>).
+        <% endfor %>
+            Single(obj => obj.Id == id);
+    }
+
+    public void Delete(int id)
+    {
+        <<%entity.name%>> obj = new <<%entity.name%>> () { Id = id };
+        db_context.<<%entity.name%>>s.Attach(obj);
+        db_context.<<%entity.name%>>s.Remove(obj);
+        db_context.SaveChanges();
+    }
+
+    public IEnumerable<<<%entity.name%>>> GetAll(<<%entity.name%>>Filter filter)
+    {
+        if (filter == null)
+            filter = new <<%entity.name%>>Filter();
+        
+        IQueryable<<<%entity.name%>>> query = db_context.<<%entity.name%>>s;
+        <% if entity.has_relations %>
+        if (filter.IncludeRelatedObjects)
+        {
+            query.
+            <% for relation in entity.relations %>
+                Include(e => e.<<% relation.csharp_name %>>)<<% ". " if not loop.last else ";" %>>
+            <% endfor %>
+        }
+        <% endif %>
+
+        return query.OrderBy(obj => obj.<<%entity.orderby.csharp_name%>>).
+            Skip(filter.From).
+            Take(filter.Count);
+    }
+}

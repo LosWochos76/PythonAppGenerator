@@ -1,0 +1,15 @@
+namespace <<%model.name%>>.Model;
+
+public class <<%entity.name%>> : BaseEntity
+{
+    <% for attribute in entity.attributes %>
+    public <<% attribute.csharp_type %>> <<% attribute.csharp_name %>> { get; set; }
+    <% endfor %>
+    <% for relation in entity.relations %>
+    <% if relation.cardinality == 1 %>
+    public <<% relation.target.name %>> <<% relation.csharp_name %>> { get; set; }
+    <% else %>
+    public ICollection<<<% relation.target.name %>>> <<% relation.csharp_name %>> { get; set; }
+    <% endif %>
+    <% endfor %>
+}

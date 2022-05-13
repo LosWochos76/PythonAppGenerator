@@ -1,0 +1,8 @@
+<form>
+  <% for attribute in entity.attributes %>
+  <mat-form-field appearance="standard">
+    <mat-label><<% attribute.ui_name %>></mat-label>
+    <input matInput formControlName="<<% attribute.name|lower %>>">
+  </mat-form-field>
+  <% endfor %>
+</form>

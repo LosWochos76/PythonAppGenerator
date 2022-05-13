@@ -1,0 +1,64 @@
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { LoggingService } from 'src/app/services/logging.service';
+import { <<% entity.name %>>Service } from 'src/app/services/<<% entity.name|lower %>>.service';
+import { <<% entity.name %>> } from 'src/app/model/<<% entity.name|lower %>>';
+
+@Component({
+  selector: 'app-<<% entity.name|lower %>>-list',
+  templateUrl: './<<% entity.name|lower %>>-list.component.html',
+  styleUrls: ['./<<% entity.name|lower %>>-list.component.css']
+})
+export class <<% entity.name %>>ListComponent implements OnInit {
+  page = 1;
+  objects: <<% entity.name %>>[] = [];
+  selected: <<% entity.name %>> = null;
+  displayedColumns = [<% for attr in entity.attributes_for_table %>'<<% attr.name %>>', <% endfor %>'action'];
+
+  constructor(
+    private logger: LoggingService,
+    private service: <<% entity.name %>>Service,
+    private router: Router) { }
+
+  async ngOnInit() {
+    this.objects = await this.service.getAll(this.page);
+    this.service.changed.subscribe(async () => {
+      this.objects = await this.service.getAll(this.page);
+    });
+  }
+
+  async onPageChange(page) {
+    this.page = page;
+    this.objects = await this.service.getAll(page);
+  }
+
+  onSelect(obj: <<% entity.name %>>) {
+    this.selected = obj;
+  }
+
+  isSelected() {
+    return this.selected != null;
+  }
+
+  onDelete() {
+    if (!this.isSelected())
+      return;
+
+    if (!confirm("Wollen Sie den Nutzer wirklich löschen?"))
+      return;
+
+    this.logger.debug("User wants to delete a <<% entity.name %>>");
+    this.service.remove(this.selected.id);
+    this.selected = null;
+  }
+
+  onEdit() {
+    this.logger.debug("User wants to edit a <<% entity.name %>>");
+    this.router.navigate(['/<<% entity.name|lower %>>', this.selected.id]);
+  }
+
+  onAdd() {
+    this.logger.debug("User wants to add a <<% entity.name %>>");
+    this.router.navigate(['/<<% entity.name|lower %>>/0']);
+  }
+}

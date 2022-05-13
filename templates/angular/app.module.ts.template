@@ -1,0 +1,56 @@
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NavigationBarComponent } from './misc/navigation-bar/navigation-bar.component';
+import { LayoutModule } from '@angular/cdk/layout';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { MatTableModule } from '@angular/material/table';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input'
+<% for entity in model.entities %>
+import { <<% entity.name %>>ListComponent } from './<<% entity.name|lower %>>/<<% entity.name|lower %>>-list/<<% entity.name|lower %>>-list.component';
+import { <<% entity.name %>>EditComponent } from './<<% entity.name|lower %>>/<<% entity.name|lower %>>-edit/<<% entity.name|lower %>>-edit.component';
+import { <<% entity.name %>>Service } from './services/<<% entity.name|lower %>>.service';
+<% endfor %>
+import { LoggingService } from './services/logging.service';
+import { HttpClientModule } from '@angular/common/http';
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    NavigationBarComponent,
+    <% for entity in model.entities %>
+    <<% entity.name %>>ListComponent,
+    <<% entity.name %>>EditComponent,
+    <% endfor %>
+  ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    LayoutModule,
+    MatToolbarModule,
+    MatButtonModule,
+    MatSidenavModule,
+    MatIconModule,
+    MatListModule,
+    HttpClientModule,
+    MatTableModule,
+    MatFormFieldModule,
+    MatInputModule
+  ],
+  providers: [
+    <% for entity in model.entities %>
+    <<% entity.name %>>Service,
+    <% endfor %>
+    LoggingService
+  ],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }

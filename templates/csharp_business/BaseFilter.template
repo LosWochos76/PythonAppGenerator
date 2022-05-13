@@ -1,0 +1,10 @@
+using <<%model.name%>>.Model;
+
+namespace <<%model.name%>>.Business;
+
+public class BaseFilter
+{
+    public int From { get; set; } = 0;
+    public int Count { get; set; } = 1000;
+    public bool IncludeRelatedObjects { get; set; }
+}

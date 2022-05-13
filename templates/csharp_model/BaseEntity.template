@@ -1,0 +1,6 @@
+namespace <<%model.name%>>.Model;
+
+public class BaseEntity
+{
+    public int Id { get; set; }
+}
